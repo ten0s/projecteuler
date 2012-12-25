@@ -6,8 +6,9 @@ main = do
     let triangle = map (address 0)
                  $ map ((map stringToInt).words)
                  $ (reverse.lines) contents
-    let res = censor reverse $ head $ solve triangle
-    print $ runWriter res
+    let result = censor reverse $ head $ solve triangle
+    let (res, _) = runWriter result
+    print $ res
 
 stringToInt :: String -> Int
 stringToInt s = read s
