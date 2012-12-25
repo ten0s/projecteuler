@@ -1,5 +1,5 @@
 Project Euler Solutions
 =======================
 
-$ solve 1
+$ ./solve 1
 233168
