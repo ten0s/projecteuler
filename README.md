@@ -1,4 +1,5 @@
-projecteuler
-============
+Project Euler Solutions
+=======================
 
-My Project Euler solutions in Haskell and Erlang
+$ solve 1
+233168
