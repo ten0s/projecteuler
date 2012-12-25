@@ -10,6 +10,10 @@ run_hs() {
 }
 
 run_erl() {
+	erlc lists2.erl
+	erlc math2.erl
+	erlc numbers.erl
+	erlc primes.erl
 	erlc $1 && erl -noshell -s $2 main -s init stop
 }
 
