@@ -23,20 +23,17 @@ prime_factors(N) when N < 1 ->
 prime_factors(N) when N =:= 1 ->
 	[];
 prime_factors(N) when N > 0 ->
-	prime_factors(N, [2], [2], []).
+	prime_factors(N, 2, []).
 
-prime_factors(1, _Primes, _PrimesAcc, Factors) ->
+prime_factors(1, _Prime, Factors) ->
 	lists:sort(Factors);
-prime_factors(N, [], [MaxPrime | _] = PrimesAcc, Factors) ->
-	NextPrime = next_prime(MaxPrime),
-	NewPrimesAcc = [NextPrime | PrimesAcc],
-	prime_factors(N, NewPrimesAcc, NewPrimesAcc, Factors);
-prime_factors(N, [Prime | Primes], PrimesAcc, Factors) ->
+prime_factors(N, Prime, Factors) ->
 	case N rem Prime =:= 0 of
 		true ->
-			prime_factors(N div Prime, PrimesAcc, PrimesAcc, [Prime | Factors]);
+			prime_factors(N div Prime, Prime, [Prime | Factors]);
 		false ->
-			prime_factors(N, Primes, PrimesAcc, Factors)
+			NextPrime = next_prime(Prime),
+			prime_factors(N, NextPrime, Factors)
 	end.
 
 next_prime(N) ->
