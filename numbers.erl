@@ -16,8 +16,10 @@ binary_coefficients(0) ->
 binary_coefficients(N) when is_integer(N) ->
     [N rem 2|binary_coefficients(N div 2)].
 
-factorial(0) ->
-    1;
-factorial(N) when N >= 1 ->
-    N * factorial(N-1).
-    
+factorial(N) when N >= 0 ->
+	factorial(N, 1).
+
+factorial(0, Acc) ->
+	Acc;
+factorial(N, Acc) ->
+	factorial(N-1, N*Acc).

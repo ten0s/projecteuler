@@ -7,7 +7,7 @@ floor(X) when X < 0 ->
         true -> T;
         false -> T - 1
     end;
-floor(X) -> 
+floor(X) ->
     trunc(X).
 
 ceiling(X) when X < 0 ->
