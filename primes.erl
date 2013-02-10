@@ -26,7 +26,7 @@ prime_factors(N) when N > 0 ->
 	prime_factors(N, 2, []).
 
 prime_factors(1, _Prime, Factors) ->
-	lists:reverse(Factors);
+	lists:sort(Factors);
 prime_factors(N, Prime, Factors) ->
 	case N rem Prime =:= 0 of
 		true ->
@@ -40,13 +40,13 @@ next_prime(N) ->
 	next_prime(N, N).
 
 next_prime(N, N) ->
-	next_prime(N + 1, N);
+	next_prime(N+1, N);
 next_prime(M, N) ->
 	case is_prime(M) of
 		true ->
 			M;
 		false ->
-			next_prime(M + 1, N)
+			next_prime(M+1, N)
 	end.
 
 -spec trial_division(pos_integer()) -> [integer()].
