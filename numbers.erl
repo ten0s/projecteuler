@@ -26,10 +26,20 @@ factorial(N, Acc) ->
 	factorial(N-1, N*Acc).
 
 -spec gcd(integer(), integer()) -> integer().
-gcd(A, 0) when A > 0 ->
-	A;
-gcd(A, B) when A > 0, B >= 0 ->
-	gcd(B, A rem B).
+gcd(M, 0) ->
+	abs(M);
+gcd(M, N) ->
+	gcd(N, M rem N).
+
+-spec lcm(integer(), integer()) -> integer().
+lcm(M, N) ->
+	trunc(abs(M * N) / gcd(M, N)).
+
+-spec lcm([integer()]) -> integer().
+lcm([X]) ->
+	X;
+lcm([X|XS]) ->
+	lcm(X, lcm(XS)).
 
 -spec integer_length(integer()) -> integer().
 integer_length(N) ->
