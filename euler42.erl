@@ -10,7 +10,7 @@ main() ->
 	Triangles = [triangle(N) || N <- lists:seq(1, 20)],
 	TriangleCodes = [Code || Code <- Codes, lists:member(Code, Triangles)],
 	Res = length(TriangleCodes),
-    io:format("~p~n", [Res]).
+	io:format("~p~n", [Res]).
 
 encode_word(Word) ->
 	lists:sum([L-$@ || L <- Word]).
