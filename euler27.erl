@@ -21,10 +21,11 @@ max_quadratic(X, MaxX, Y, MinY, MaxY, {C0, _, _}=Current) ->
 	    	max_quadratic(X, MaxX, Y+1, MinY, MaxY, {C1, X, Y});
 		false ->
 		    max_quadratic(X, MaxY, Y+1, MinY, MaxY, Current)
-	    end.
+	end.
 
 count_primes(A, B, N) ->
-    case primes:is_prime(quadratic(A, B, N)) of
+	Quadratic = quadratic(A, B, N),
+    case Quadratic >= 1 andalso primes:is_prime(Quadratic) of
 		true ->
 	    	count_primes(A, B, N+1);
 		false ->
