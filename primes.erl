@@ -28,6 +28,8 @@ prime_factors(N) when N > 0 ->
 	prime_factors(N, 2, []).
 
 -spec next_prime(pos_integer()) -> prime().
+next_prime(N) when N < 1 ->
+	exit(badarg);
 next_prime(N) ->
 	next_prime(N, N).
 
@@ -52,7 +54,7 @@ prime_factors(N, Prime, Factors) ->
 		true ->
 			prime_factors(N div Prime, Prime, [Prime | Factors]);
 		false ->
-			prime_factors(N, next_prime(Prime), Factors)
+			prime_factors(N, next_prime(Prime, Prime), Factors)
 	end.
 
 next_prime(N, N) ->
