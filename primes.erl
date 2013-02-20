@@ -5,7 +5,7 @@
 is_prime(N) when N < 1 ->
 	exit(badagr);
 is_prime(1) ->
-    true;
+    false;
 is_prime(2) ->
 	true;
 is_prime(3) ->
