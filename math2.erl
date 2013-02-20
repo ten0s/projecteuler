@@ -18,3 +18,6 @@ ceiling(X) ->
         true -> T;
         false -> T + 1
     end.
+
+logN(N, X) ->
+	math:log(X) / math:log(N).
