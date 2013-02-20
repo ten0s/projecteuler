@@ -7,7 +7,7 @@
 
 -type prime() :: pos_integer().
 
--spec is_prime(prime()) -> boolean().
+-spec is_prime(pos_integer()) -> boolean().
 is_prime(N) when N < 1 ->
 	exit(badagr);
 is_prime(1) ->
