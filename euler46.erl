@@ -20,7 +20,7 @@ find_prime_integers(CompositeOdd, Prime, Integer) when CompositeOdd >= Prime ->
 		{found, NewInteger} ->
 			{found, Prime, NewInteger};
 		not_found ->
-			find_prime_integers(CompositeOdd, next_prime(Prime), 1)
+			find_prime_integers(CompositeOdd, primes:next_prime(Prime), 1)
 	end;
 find_prime_integers(_, _, _) ->
 	not_found.
@@ -43,17 +43,4 @@ next_composite_odd(N) ->
 			next_composite_odd(NextOdd);
 		false ->
 			NextOdd
-	end.
-
-next_prime(N) ->
-	next_prime(N, N).
-
-next_prime(N, N) ->
-	next_prime(N+1, N);
-next_prime(M, N) ->
-	case primes:is_prime(M) of
-		true ->
-			M;
-		false ->
-			next_prime(M+1, N)
 	end.
