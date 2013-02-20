@@ -4,15 +4,14 @@
 -spec is_prime(pos_integer()) -> boolean().
 is_prime(N) when N < 1 ->
 	exit(badagr);
-is_prime(N) when N =:= 1 ->
+is_prime(1) ->
     true;
+is_prime(2) ->
+	true;
+is_prime(3) ->
+	true;
 is_prime(N) when N > 0 ->
-    case trial_division(N) of
-		[] ->
-			true;
-		_  ->
-			false
-    end.
+	trial_division(N).
 
 primes() ->
     void.
@@ -25,31 +24,35 @@ prime_factors(N) when N =:= 1 ->
 prime_factors(N) when N > 0 ->
 	prime_factors(N, 2, []).
 
+%% ===================================================================
+%% Internal
+%% ===================================================================
+
+trial_division(N) ->
+    Upper = math2:floor(math:sqrt(N)),
+	trial_division(N, 2, Upper).
+
+trial_division(N, Upper, Upper) ->
+	N rem Upper =/= 0;
+trial_division(N, Curr, Upper) ->
+	N rem Curr =/= 0 andalso
+	trial_division(N, Curr + 1, Upper).
+
 prime_factors(1, _Prime, Factors) ->
-	lists:sort(Factors);
+	Factors;
 prime_factors(N, Prime, Factors) ->
 	case N rem Prime =:= 0 of
 		true ->
 			prime_factors(N div Prime, Prime, [Prime | Factors]);
 		false ->
-			NextPrime = next_prime(Prime),
+			NextPrime = next_prime(Prime + 1),
 			prime_factors(N, NextPrime, Factors)
 	end.
 
 next_prime(N) ->
-	next_prime(N, N).
-
-next_prime(N, N) ->
-	next_prime(N+1, N);
-next_prime(M, N) ->
-	case is_prime(M) of
+	case is_prime(N) of
 		true ->
-			M;
+			N;
 		false ->
-			next_prime(M+1, N)
+			next_prime(N + 1)
 	end.
-
--spec trial_division(pos_integer()) -> [integer()].
-trial_division(N) when is_integer(N), N > 0 ->
-    Upper = math2:floor(math:sqrt(N)),
-    lists:filter(fun(X) -> N rem X == 0 end, lists:seq(2, Upper)).
