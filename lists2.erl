@@ -11,6 +11,3 @@ permutations([]) ->
 	[[]];
 permutations(L) ->
 	[[H|T] || H <- L, T <- permutations(L--[H])].
-
-uniq(L) ->
-	sets:to_list(sets:from_list(L)).

@@ -11,7 +11,7 @@ filter_perms(Perms) ->
 	filter_perms(Perms, []).
 
 filter_perms([], Products) ->
-	lists2:uniq(Products);
+	lists:usort(Products);
 filter_perms([Perm|Perms], Products) ->
 	case check_perm(Perm) of
 		{true, Product} ->
