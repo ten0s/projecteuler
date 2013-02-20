@@ -26,7 +26,7 @@ find_prime_integers(_, _, _) ->
 	not_found.
 
 find_integers(CompositeOdd, Prime, Integer) ->
-	Value = Prime + 2 * round(math:pow(Integer, 2)),
+	Value = Prime + 2 * Integer * Integer,
 	if
 		Value =:= CompositeOdd ->
 			{found, Integer};
