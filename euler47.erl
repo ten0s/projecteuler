@@ -1,11 +1,9 @@
 -module(euler47).
 -export([main/0]).
 
--compile(export_all).
-
 main() ->
 	DistinctCount = 4,
-	StartFrom = 2,
+	StartFrom = 130000, %% initially from 2, but too long :(
 	Res = search(DistinctCount, StartFrom, 0),
     io:format("~p~n", [Res]).
 
@@ -20,4 +18,9 @@ search(DistinctCount, CurrInteger, Acc) ->
 	end.
 
 uniq_factors_count(Integer) ->
-	length(lists:usort(primes:prime_factors(Integer))).
+	case primes:is_prime(Integer) of
+		true ->
+			1;
+		false ->
+			length(lists:usort(primes:prime_factors(Integer)))
+	end.
