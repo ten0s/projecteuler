@@ -1,43 +1,37 @@
 -module(euler37).
 -export([main/0]).
 
+-compile(export_all).
+
 %%
 %% http://en.wikipedia.org/wiki/Truncatable_prime
 %%
-
-main() -> %% ~70 secs :(
-    List = lists:filter(fun is_truncatable_prime/1, lists:filter(fun primes:is_prime/1, lists:seq(8, 750000))),
+main() ->
+	Primes = lists:filter(fun primes:is_prime/1, lists:seq(8, 750000)),
+    List = lists:filter(fun is_truncatable_prime/1, Primes),
     Sum = lists:sum(List),
-    io:format("~p~n", [Sum]).
+	io:format("sum: ~p: list: ~p~n", [Sum, List]).
 
 is_truncatable_prime(N) ->
-    is_left_truncatable_prime(N) and is_right_truncatable_prime(N).
+    is_left_truncatable_prime(N) andalso is_right_truncatable_prime(N).
 
 is_left_truncatable_prime(N) ->
     case trunc_left(N) of
-	0 ->
-	    true;
-	Truncated ->
-	    case primes:is_prime(Truncated) of
-		true ->
-		    is_left_truncatable_prime(Truncated);
-		false ->
-		    false
-	    end
+		0 ->
+		    true;
+		Truncated ->
+		    primes:is_prime(Truncated) andalso
+			is_left_truncatable_prime(Truncated)
     end.
 
 is_right_truncatable_prime(N) ->
     case trunc_right(N) of
-	0 ->
-	    true;
-	Truncated ->
-	    case primes:is_prime(Truncated) of
-		true ->
-		    is_right_truncatable_prime(Truncated);
-		false ->
-		    false
-	    end
-    end.
+		0 ->
+		    true;
+		Truncated ->
+		    primes:is_prime(Truncated) andalso
+			is_right_truncatable_prime(Truncated)
+	end.
 
 digits_count(N) ->
     trunc(math:log10(N)) + 1.
