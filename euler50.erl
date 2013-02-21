@@ -6,14 +6,18 @@ main() ->
     io:format("~p~n", [Res]).
 
 search_sums(MaxSum) ->
-	search_sums(2, 2, 0, 0, [], MaxSum).
+	search_all_sums(2, [], MaxSum).
 
-search_sums(InitPrime, _CurrPrime, _Sum, _Count, Acc, MaxSum) when InitPrime >= MaxSum ->
+search_all_sums(InitPrime, Acc, MaxSum) when InitPrime >= MaxSum ->
 	lists:sort(fun({_, C1}, {_, C2}) -> C1 > C2 end, Acc);
-search_sums(InitPrime, _CurrPrime, Sum, _Count, Acc, MaxSum) when Sum > MaxSum ->
+search_all_sums(InitPrime, Acc, MaxSum) ->
+	NewAcc = search_sub_sums(InitPrime, 0, 0, Acc, MaxSum),
 	NewInitPrime = primes:next_prime(InitPrime),
-	search_sums(NewInitPrime, NewInitPrime, 0, 0, Acc, MaxSum);
-search_sums(InitPrime, CurrPrime, Sum, Count, Acc, MaxSum) ->
+	search_all_sums(NewInitPrime, NewAcc, MaxSum).
+
+search_sub_sums(_CurrPrime, Sum, _Count, Acc, MaxSum) when Sum > MaxSum ->
+	Acc;
+search_sub_sums(CurrPrime, Sum, Count, Acc, MaxSum) ->
 	NewCurrPrime = primes:next_prime(CurrPrime),
 	NewSum = CurrPrime + Sum,
 	NewCount = Count + 1,
@@ -24,4 +28,4 @@ search_sums(InitPrime, CurrPrime, Sum, Count, Acc, MaxSum) ->
 			false ->
 				Acc
 		end,
-	search_sums(InitPrime, NewCurrPrime, NewSum, NewCount, NewAcc, MaxSum).
+	search_sub_sums(NewCurrPrime, NewSum, NewCount, NewAcc, MaxSum).
