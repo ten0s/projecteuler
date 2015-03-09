@@ -6,15 +6,37 @@ if [ $# -ne 1 ]; then
 fi
 
 run_hs() {
-	ghc $1 >/dev/null 2>&1 && ./$2
+    if [ `which ghc` ]; then
+        out=`ghc $1`
+        res=$?
+	    if [ "$res" -eq "0" ]; then
+            ./$2
+        else
+            echo $out
+            exit $res
+        fi
+    else
+        echo "Haskell is NOT installed"
+        echo
+        echo "sudo apt-get install ghc"
+        echo "sudo apt-get install cabal-install"
+        echo "cabal update"
+        echo "cabal install primes"
+        exit 1
+    fi
 }
 
 run_erl() {
-	erlc lists2.erl
-	erlc math2.erl
-	erlc numbers.erl
-	erlc primes.erl
-	erlc $1 && erl -noshell -s $2 main -s init stop
+    if [ `which erlc` ]; then
+	    erlc lists2.erl
+	    erlc math2.erl
+	    erlc numbers.erl
+	    erlc primes.erl
+	    erlc $1 && erl -noshell -s $2 main -s init stop
+    else
+        echo "Erlang is NOT installed"
+        exit 1
+    fi
 }
 
 number=$1
@@ -25,6 +47,6 @@ if [ ! -z $filename ] && [ -f $filename ]; then
 	name="${filename%.*}"
 	run_$ext $filename $name
 else
-	echo "Problem $nbr isn't solved yet"
+	echo "Problem $number isn't solved yet"
 	exit 1
 fi
