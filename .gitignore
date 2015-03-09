@@ -1,4 +1,6 @@
-*.beam
-*.hi
-*.o
-erl_crash.dump
+*
+!*.erl
+!*.hs
+!*.md
+!*.txt
+!solve
