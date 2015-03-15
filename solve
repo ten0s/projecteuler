@@ -1,16 +1,17 @@
 #!/bin/bash
 
 if [ $# -ne 1 ]; then
-	echo "usage: solve <problem #>"
-	exit 1
+    echo "usage: solve <problem #>"
+    exit 1
 fi
 
 run_hs() {
     if [ `which ghc` ]; then
         out=`ghc $1`
         res=$?
-	    if [ "$res" -eq "0" ]; then
+        if [ "$res" -eq "0" ]; then
             ./$2
+            rm -f *.o *.hi $2
         else
             echo $out
             exit $res
@@ -28,11 +29,9 @@ run_hs() {
 
 run_erl() {
     if [ `which erlc` ]; then
-	    erlc lists2.erl
-	    erlc math2.erl
-	    erlc numbers.erl
-	    erlc primes.erl
-	    erlc $1 && erl -noshell -s $2 main -s init stop
+        erlc lists2.erl math2.erl numbers.erl primes.erl
+        erlc $1 && erl -noshell -s $2 main -s init stop
+        rm -f *.beam
     else
         echo "Erlang is NOT installed"
         exit 1
@@ -54,10 +53,10 @@ number=$1
 filename=`ls euler$number.{hs,erl,sml} 2> /dev/null | head -n 1`
 
 if [ ! -z $filename ] && [ -f $filename ]; then
-	ext="${filename##*.}"
-	name="${filename%.*}"
-	run_$ext $filename $name
+    ext="${filename##*.}"
+    name="${filename%.*}"
+    run_$ext $filename $name
 else
-	echo "Problem $number isn't solved yet"
-	exit 1
+    echo "Problem $number isn't solved yet"
+    exit 1
 fi
