@@ -40,7 +40,22 @@ run_erl() {
 
 run_sml() {
     if [ `which sml` ]; then
-        sml $1 | grep -v '\['
+        cat > euler.cm <<EOF
+Group is
+      \$/basis.cm
+      list-utils.sml
+      print-utils.sml
+      ${1}
+EOF
+        out=`ml-build euler.cm Main.main`
+        res=$?
+        if [ "$res" -eq 0 ]; then
+            sml @SMLload euler.x86-linux
+            rm -rf euler.cm .cm/ *.x86-linux
+        else
+            echo $out
+            exit $res
+        fi
     else
         echo "SML/NJ is NOT installed"
         echo

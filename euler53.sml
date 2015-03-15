@@ -25,15 +25,6 @@ end
 
 fun for from to f acc_init = forStep from to 1 f acc_init
 
-fun print1 a =
-  print (a ^ "\n")
-
-fun print2 a b =
-  print (a ^ " " ^ b ^ "\n")
-
-fun print3 a b c =
-  print (a ^ " " ^ b ^ " " ^ c ^ "\n")
-
 fun solve () =
   for 1 100 (fn (i, iacc) =>
                 (for 1 i
@@ -41,6 +32,11 @@ fun solve () =
                          if (selections i j) > 1000000 then jacc + 1
                          else jacc) 0) + iacc) 0
 
-val ans = solve ()
-val _ = print1 (Int.toString ans)
-val _ = OS.Process.exit(OS.Process.success)
+structure Main = struct
+  fun main (_, _) = let
+      val ans = solve ()
+      val _ = PrintUtils.printLn (Int.toString ans)
+  in
+      0
+  end
+end
