@@ -3,4 +3,5 @@
 !*.hs
 !*.md
 !*.txt
+!*.sml
 !solve

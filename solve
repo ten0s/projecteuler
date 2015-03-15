@@ -39,8 +39,19 @@ run_erl() {
     fi
 }
 
+run_sml() {
+    if [ `which sml` ]; then
+        sml $1 | grep -v '\['
+    else
+        echo "SML/NJ is NOT installed"
+        echo
+        echo "sudo apt-get install smlnj libsmlnj-smlnj"
+        exit 1
+    fi
+}
+
 number=$1
-filename=`ls euler$number.{hs,erl} 2> /dev/null | head -n 1`
+filename=`ls euler$number.{hs,erl,sml} 2> /dev/null | head -n 1`
 
 if [ ! -z $filename ] && [ -f $filename ]; then
 	ext="${filename##*.}"
