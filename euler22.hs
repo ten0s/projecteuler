@@ -3,7 +3,7 @@ import Data.Maybe (fromJust)
 import ListAux
 
 main = do
-    contents <- readFile "problem22.txt"
+    contents <- readFile "files/p022_names.txt"
     let names = sort $ map (tail.init) $ wordsWith (== ',') contents
     let charsSum = foldl (\acc c -> acc + (fromJust (elemIndex c ['A'..'Z']) + 1 {-use index starting 1-})) 0
     let nameIndex n = fromJust (elemIndex n names) + 1{-use index starting 1-}

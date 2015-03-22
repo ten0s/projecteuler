@@ -2,7 +2,7 @@ import Control.Monad
 import Control.Monad.Writer
 
 main = do
-    contents <- readFile "problem18.txt"
+    contents <- readFile "files/p018_triangle.txt"
     let triangle = map (address 0)
                  $ map ((map stringToInt).words)
                  $ (reverse.lines) contents

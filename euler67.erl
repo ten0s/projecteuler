@@ -12,7 +12,7 @@
 %% main() -> void()
 %%
 main() ->
-    case file:read_file("problem67.txt") of
+    case file:read_file("files/p067_triangle.txt") of
 		{ok, Binary} ->
 			Lines = lists:reverse(lines(binary_to_list(Binary))),
 			Ints = [[list_to_integer(W) || W <- words(L)] || L <- Lines],

@@ -2,7 +2,7 @@
 -export([main/0]).
 
 main() ->
-	{ok, ContentB} = file:read_file("problem42.txt"),
+	{ok, ContentB} = file:read_file("files/p042_words.txt"),
 	ContentL = binary_to_list(ContentB),
 	Words = [string:strip(Word, both, $")  || Word <- string:tokens(ContentL, ",")],
 	Codes = [encode_word(Word) || Word <- Words],
