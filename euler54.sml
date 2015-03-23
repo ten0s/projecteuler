@@ -402,11 +402,51 @@ val fullHouseWithThreeFours = valOf (Hand.fromString "2H 2D 4C 4D 4S");
 val fullHouseWithThreeThrees = valOf (Hand.fromString "3C 3D 3S 9S 9D");
 SMLUnit.assertEqual Hand.deal (fullHouseWithThreeFours, fullHouseWithThreeThrees) First;
 
+fun readFile () = let
+    fun collect_lines_acc fd acc =
+      case TextIO.inputLine fd
+       of SOME l =>
+          collect_lines_acc fd ((String.substring (l, 0, (size l)-1)) :: acc)
+        | NONE => List.rev acc
+    fun collect_lines (filename) = let
+        val fd = TextIO.openIn (filename)
+        val lines = collect_lines_acc fd []
+    in
+        (TextIO.closeIn fd; lines)
+    end
+in
+    collect_lines "files/p054_poker.txt"
+end
+
+fun getHands () = let
+    fun splitHands s = let
+        val s1 = String.substring (s, 0, 14)
+        val s2 = String.substring (s, 15, 14)
+    in
+      (valOf (Hand.fromString s1), valOf (Hand.fromString s2))
+    end
+    val lines = readFile ()
+in
+    List.map splitHands lines
+end
+
+fun getDeals () = let
+    val hands = getHands ()
+in
+    List.map Hand.deal hands
+end
+
+fun solve () = let
+    val deals = getDeals ()
+in
+    List.length (List.filter (fn d => d = First) deals)
+end
+
 (*
 structure Main = struct
   fun main (_, _) = let
-      val ans = solve ()
-      val _ = PrintUtils.printLn (Int.toString ans)
+      val res = solve ()
+      val _ = PrintUtils.printLn (Int.toString res)
   in
       0
   end
