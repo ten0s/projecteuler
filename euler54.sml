@@ -1,5 +1,6 @@
-(* http://abstractfactory.blogspot.com/2006/05/sml-hacking-tip-turn-off-polyequal.html *)
+(* http://abstractfactory.blogspot.com/2006/05/sml-hacking-tip-turn-off-polyequal.html
 Control.polyEqWarn := false;
+*)
 
 type rank = int;
 datatype suit = H | D | C | S;
@@ -445,7 +446,6 @@ in
     List.length (List.filter (fn d => d = First) deals)
 end
 
-(*
 structure Main = struct
   fun main (_, _) = let
       val res = solve ()
@@ -454,4 +454,3 @@ structure Main = struct
       0
   end
 end
-*)

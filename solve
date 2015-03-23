@@ -43,8 +43,10 @@ run_sml() {
         cat > euler.cm <<EOF
 Group is
       \$/basis.cm
+      \$/smlnj-lib.cm
       list-utils.sml
       print-utils.sml
+      smlunit.sml
       ${1}
 EOF
         out=`ml-build euler.cm Main.main`
