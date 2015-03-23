@@ -324,8 +324,10 @@ structure Hand = struct
   end
 end;
 
-(* TESTS *)
+(* TESTS BEGIN *)
+(*
 use "smlunit.sml";
+*)
 
 (* Card tests *)
 SMLUnit.assertThrow Card.mkCard (1,H) IllegalRank;
@@ -347,7 +349,7 @@ val hand = (Card.mkCard (14,C),
 SMLUnit.assertEqual Hand.fromString "5D 8C 9S JS AC" (SOME hand);
 SMLUnit.assertEqual Hand.toString hand "AC JS 9S 8C 5D";
 
-(* Hand categories *)
+(* Hand category tests *)
 val royalFlush = valOf (Hand.fromString "TC JC QC KC AC");
 SMLUnit.assertEqual Hand.category royalFlush RoyalFlush;
 
@@ -401,6 +403,7 @@ SMLUnit.assertEqual Hand.deal (pairOfQueensHighCardNine, pairOfQueensHighCardSev
 val fullHouseWithThreeFours = valOf (Hand.fromString "2H 2D 4C 4D 4S");
 val fullHouseWithThreeThrees = valOf (Hand.fromString "3C 3D 3S 9S 9D");
 SMLUnit.assertEqual Hand.deal (fullHouseWithThreeFours, fullHouseWithThreeThrees) First;
+(* TESTS END *)
 
 fun readFile () = let
     fun collect_lines_acc fd acc =
