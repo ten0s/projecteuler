@@ -107,7 +107,7 @@ structure Hand = struct
       val (c11, c12, c13, c14, c15) = h1
       val (c21, c22, c23, c24, c25) = h2
   in
-      case Card.compare (c11, c12)
+      case Card.compare (c11, c21)
        of EQUAL => (case Card.compare (c12, c22)
                      of EQUAL => (case Card.compare (c13, c23)
                                    of EQUAL => (case Card.compare (c14, c24)
