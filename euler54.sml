@@ -1,16 +1,14 @@
 type rank = int;
 datatype suit = H | D | C | S;
 
-datatype pair = Pair of rank;
-datatype three = Three of rank;
 datatype category = RoyalFlush
                   | StraightFlush of rank
                   | Four of rank
-                  | FullHouse of (three * pair)
+                  | FullHouse of (rank * rank)
                   | Flush
                   | Straight of rank
                   | Three of rank
-                  | TwoPairs of (pair * pair)
+                  | TwoPairs of (rank * rank)
                   | Pair of rank
                   | HighCard;
 
@@ -87,19 +85,6 @@ structure Card = struct
   end
 end;
 
-(*
-    High Card: Highest value card.
-    One Pair: Two cards of the same value.
-    Two Pairs: Two different pairs.
-    Three of a Kind: Three cards of the same value.
-    Straight: All cards are consecutive values.
-    Flush: All cards of the same suit.
-    Full House: Three of a kind and a pair.
-    Four of a Kind: Four cards of the same value.
-    Straight Flush: All cards are consecutive values of same suit.
-    Royal Flush: Ten, Jack, Queen, King, Ace, in same suit.
-*)
-
 structure Hand = struct
   type card = Card.card
   type hand = card * card * card * card * card
@@ -140,24 +125,128 @@ structure Hand = struct
       Card.suit c5 = s
   end
 
-  fun isStraight ((c1, c2, c3, c4, c5):hand):rank option =
-    SOME (Card.rank c1)
+  fun isStraight ((c1, c2, c3, c4, c5):hand):rank option = let
+      val r1 = Card.rank c1
+  in
+      if Card.rank c2 = r1 - 1 andalso
+         Card.rank c3 = r1 - 2 andalso
+         Card.rank c4 = r1 - 3 andalso
+         Card.rank c5 = r1 - 4
+      then
+          SOME (Card.rank c1)
+      else
+          NONE
+  end
 
+  fun isFour ((c1, c2, c3, c4, c5):hand):rank option = let
+      val r1 = Card.rank c1
+      val r2 = Card.rank c2
+      val r3 = Card.rank c3
+      val r4 = Card.rank c4
+      val r5 = Card.rank c5
+  in
+      if (r1 = r2 andalso
+          r2 = r3 andalso
+          r3 = r4) orelse
+         (r2 = r3 andalso
+          r3 = r4 andalso
+          r4 = r5)
+      then
+          SOME r3
+      else
+          NONE
+  end
 
+  fun isFullHouse ((c1, c2, c3, c4, c5):hand):(rank * rank) option = let
+      val r1 = Card.rank c1
+      val r2 = Card.rank c2
+      val r3 = Card.rank c3
+      val r4 = Card.rank c4
+      val r5 = Card.rank c5
+  in
+      if (r1 = r2 andalso
+          r2 = r3 andalso
+          r4 = r5)
+      then
+          SOME (r1, r4)
+      else
+          if (r1 = r2 andalso
+              r3 = r4 andalso
+              r4 = r5)
+          then
+              SOME (r3, r1)
+          else
+              NONE
+  end
 
-  fun category (h:hand):category =
-    case isStraight h
-     of SOME r => if isFlush h then
-                      if r = 14 then
-                          RoyalFlush
-                      else
-                          StraightFlush r
-                  else
-                      Straight r
-     | NONE => HighCard
+  fun isThree ((c1, c2, c3, c4, c5):hand):rank option = let
+      val r1 = Card.rank c1
+      val r2 = Card.rank c2
+      val r3 = Card.rank c3
+      val r4 = Card.rank c4
+      val r5 = Card.rank c5
+  in
+      if (r1 = r2 andalso
+          r2 = r3) orelse
+         (r2 = r3 andalso
+          r3 = r4) orelse
+         (r3 = r4 andalso
+          r4 = r4)
+      then
+          SOME r3
+      else
+          NONE
+  end
+
+  fun isTwoPairs((c1, c2, c3, c4, c5):hand):(rank * rank) option = let
+      val r1 = Card.rank c1
+      val r2 = Card.rank c2
+      val r3 = Card.rank c3
+      val r4 = Card.rank c4
+      val r5 = Card.rank c5
+  in
+      if r1 = r2 andalso r3 = r4 then SOME (r1, r3)
+      else if r1 = r2 andalso r4 = r5 then SOME (r1, r4)
+      else if r2 = r3 andalso r4 = r5 then SOME (r2, r4)
+      else NONE
+  end
+
+  fun isPair ((c1, c2, c3, c4, c5):hand):rank option = let
+      val r1 = Card.rank c1
+      val r2 = Card.rank c2
+      val r3 = Card.rank c3
+      val r4 = Card.rank c4
+      val r5 = Card.rank c5
+  in
+      if r1 = r2 then SOME r1
+      else if r2 = r3 then SOME r2
+      else if r3 = r4 then SOME r3
+      else if r4 = r5 then SOME r4
+      else NONE
+  end
+
+  fun category (h:hand):category = let
+      val flush = isFlush h
+  in
+      case isStraight h
+       of SOME r => if flush then
+                        if r = 14 then RoyalFlush
+                        else StraightFlush r
+                    else Straight r
+        | NONE => case isFour h
+                   of SOME r => Four r
+                    | NONE => (case isFullHouse h
+                                of SOME (r, r') => FullHouse (r, r')
+                                 | NONE => if flush then Flush
+                                           else (case isThree h
+                                                  of SOME r => Three r
+                                                  | NONE => (case isTwoPairs h
+                                                              of SOME (r, r') => TwoPairs (r, r')
+                                                              | NONE => (case isPair h
+                                                                          of SOME r => Pair r
+                                                                           | NONE => HighCard))))
+  end
 end;
-
-
 
 (* TESTS *)
 use "smlunit.sml";
@@ -182,36 +271,39 @@ val hand = (Card.mkCard (14,C),
 SMLUnit.assertEqual Hand.fromString "5D 8C 9S JS AC" (SOME hand);
 SMLUnit.assertEqual Hand.toString hand "AC JS 9S 8C 5D";
 
-(* Hand order *)
+(* Hand categories *)
 val royalFlush = valOf (Hand.fromString "TC JC QC KC AC");
 SMLUnit.assertEqual Hand.category royalFlush RoyalFlush;
 
-val straightFlush = valOf (Hand.fromString "JC TC 9C 8C 7C");
-SMLUnit.assertEqual Hand.category straightFlush (StraightFlush 11);
+val straightFlush = valOf (Hand.fromString "2H 3H 4H 5H 6H");
+SMLUnit.assertEqual Hand.category straightFlush (StraightFlush 6);
 
 val straight = valOf (Hand.fromString "9S 8D 7S 6H 5C");
 SMLUnit.assertEqual Hand.category straight (Straight 9);
 
-(*
-5H 5C 6S 7S KD Pair of Fives
-2C 3S 8S 8D TD Pair of Eights
+val fourA = valOf (Hand.fromString "2D AH AD AC AS");
+SMLUnit.assertEqual Hand.category fourA (Four 14);
 
-5D 8C 9S JS AC Highest card Ace ?? simple hand compare by values
+val four2 = valOf (Hand.fromString "AD 2H 2D 2C 2S");
+SMLUnit.assertEqual Hand.category four2 (Four 2);
 
-5H 5C 6S 7S KD Pair of Fives
-5H 5C 6S 7S 7D Two Pairs
-2D 9C AS AH AC Three Aces
-2H 3D 4C 5S 6H Straight == 2,3,4,5,6 (any suits)
-3D 6D 7D TD QD Flush with Diamonds == the same suit
-2H 2D 4C 4D 4S Full House With Three Fours == Three and Pair
-2D AH AD AC AS Four of Aces
-2H 3H 4H 5H 6H Straight Flush == 2,3,4,5,6 of Hearts (one suit)
+val fullHouse = valOf (Hand.fromString "2H 2D 4C 4D 4S");
+SMLUnit.assertEqual Hand.category fullHouse (FullHouse (4, 2));
 
-TC JC QC KC AC Royal Flush == 10,J,Q,K,A of Clubs
+val flush = valOf (Hand.fromString "3D 6D 7D TD QD");
+SMLUnit.assertEqual Hand.category flush Flush;
 
-4D 6S 9H QH QC Pair of Queens Highest card Nine
-3D 6D 7H QD QS Pair of Queens Highest card Seven
-*)
+val three = valOf (Hand.fromString "2D 9C AS AH AC");
+SMLUnit.assertEqual Hand.category three (Three 14);
+
+val twoPairs = valOf (Hand.fromString "5H 5C 6S 7S 7D");
+SMLUnit.assertEqual Hand.category twoPairs (TwoPairs (7, 5));
+
+val pair = valOf (Hand.fromString "5H 5C 6S 7S KD");
+SMLUnit.assertEqual Hand.category pair (Pair 5);
+
+val highCard = valOf (Hand.fromString "5D 8C 9S JS AC");
+SMLUnit.assertEqual Hand.category highCard HighCard;
 
 (*
 structure Main = struct
