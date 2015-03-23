@@ -1,3 +1,6 @@
+(* http://abstractfactory.blogspot.com/2006/05/sml-hacking-tip-turn-off-polyequal.html *)
+Control.polyEqWarn := false;
+
 type rank = int;
 datatype suit = H | D | C | S;
 
@@ -11,6 +14,10 @@ datatype category = RoyalFlush
                   | TwoPairs of (rank * rank)
                   | Pair of rank
                   | HighCard;
+
+datatype outcome = First
+                 | Second
+                 | Tie;
 
 exception IllegalRank
 exception InvalidHand
@@ -36,7 +43,7 @@ structure Card = struct
       s
   end
 
-  fun compare (c1, c2) = Int.compare (rank c1, rank c2)
+  fun compare (c1:card, c2:card) = Int.compare (rank c1, rank c2)
 
   val rs = [(#"2", 2), (#"3", 3), (#"4", 4), (#"5", 5),
             (#"6", 6), (#"7", 7), (#"8", 8), (#"9", 9),
@@ -94,6 +101,21 @@ structure Hand = struct
       val [c1', c2', c3', c4', c5'] = ListMergeSort.sort cmp [c1, c2, c3, c4, c5]
   in
     (c1', c2', c3', c4', c5')
+  end
+
+  fun compare (h1:hand, h2:hand) = let
+      val (c11, c12, c13, c14, c15) = h1
+      val (c21, c22, c23, c24, c25) = h2
+  in
+      case Card.compare (c11, c12)
+       of EQUAL => (case Card.compare (c12, c22)
+                     of EQUAL => (case Card.compare (c13, c23)
+                                   of EQUAL => (case Card.compare (c14, c24)
+                                                 of EQUAL => Card.compare (c15, c25)
+                                                  | res => res)
+                                    | res => res)
+                      | res => res)
+        | res => res
   end
 
   fun fromString (str:string):hand option = let
@@ -198,7 +220,7 @@ structure Hand = struct
           NONE
   end
 
-  fun isTwoPairs((c1, c2, c3, c4, c5):hand):(rank * rank) option = let
+  fun isTwoPairs ((c1, c2, c3, c4, c5):hand):(rank * rank) option = let
       val r1 = Card.rank c1
       val r2 = Card.rank c2
       val r3 = Card.rank c3
@@ -245,6 +267,60 @@ structure Hand = struct
                                                               | NONE => (case isPair h
                                                                           of SOME r => Pair r
                                                                            | NONE => HighCard))))
+  end
+
+  fun choose ([], []) = Tie
+    | choose (l::ls, r::rs) =
+      if l > r then First
+      else if l < r then Second
+      else choose (ls, rs)
+
+  fun highCard (lh, rh) =
+    case compare (lh, rh)
+     of GREATER => First
+      | LESS => Second
+      | EQUAL => Tie
+
+  fun chooseOrHighCard (ls, rs) (lh, rh) =
+    case choose (ls, rs)
+     of Tie => highCard (lh, rh)
+      | winner => winner
+
+  fun deal (h1:hand, h2:hand):outcome = let
+      val c1 = category h1
+      val c2 = category h2
+  in
+    case (c1, c2)
+     of (RoyalFlush, RoyalFlush) => Tie
+      | (RoyalFlush, _) => First
+      | (_, RoyalFlush) => Second
+      | (StraightFlush r1, StraightFlush r2) => choose ([r1], [r2])
+      | (StraightFlush _, _) => First
+      | (_, StraightFlush _) => Second
+      | (Four r1, Four r2) => chooseOrHighCard ([r1], [r2]) (h1, h2)
+      | (Four _, _) => First
+      | (_, Four _) => Second
+      | (FullHouse (r11, r12), FullHouse (r21, r22)) =>
+        chooseOrHighCard ([r11, r12], [r21, r22]) (h1, h2)
+      | (FullHouse _, _) => First
+      | (_, FullHouse _) => Second
+      | (Flush, Flush) => highCard (h1, h2)
+      | (Flush, _) => First
+      | (_, Flush) => Second
+      | (Straight r1, Straight r2) => choose ([r1], [r2])
+      | (Straight _, _) => First
+      | (_, Straight _) => Second
+      | (Three r1, Three r2) => chooseOrHighCard ([r1], [r2]) (h1, h2)
+      | (Three _, _) => First
+      | (_, Three _) => Second
+      | (TwoPairs (r11, r12), TwoPairs (r21, r22)) =>
+        chooseOrHighCard ([r11, r12], [r21, r22]) (h1, h2)
+      | (TwoPairs _, _) => First
+      | (_, TwoPairs _) => Second
+      | (Pair r1, Pair r2) => chooseOrHighCard ([r1], [r2]) (h1, h2)
+      | (Pair _, _) => First
+      | (_, Pair _) => Second
+      | (HighCard, HighCard) => highCard (h1, h2)
   end
 end;
 
@@ -304,6 +380,27 @@ SMLUnit.assertEqual Hand.category pair (Pair 5);
 
 val highCard = valOf (Hand.fromString "5D 8C 9S JS AC");
 SMLUnit.assertEqual Hand.category highCard HighCard;
+
+(* Hand deals *)
+val pairOfFives = valOf (Hand.fromString "5H 5C 6S 7S KD");
+val pairOfEights = valOf (Hand.fromString "2C 3S 8S 8D TD");
+SMLUnit.assertEqual Hand.deal (pairOfFives, pairOfEights) Second;
+
+val highCardAce = valOf (Hand.fromString "5D 8C 9S JS AC");
+val highCardQueen = valOf (Hand.fromString "2C 5C 7D 8S QH");
+SMLUnit.assertEqual Hand.deal (highCardAce, highCardQueen) First;
+
+val threeAces = valOf (Hand.fromString "2D 9C AS AH AC");
+val flush = valOf (Hand.fromString "3D 6D 7D TD QD");
+SMLUnit.assertEqual Hand.deal (threeAces, flush) Second;
+
+val pairOfQueensHighCardNine = valOf (Hand.fromString "4D 6S 9H QH QC");
+val pairOfQueensHighCardSeven = valOf (Hand.fromString "3D 6D 7H QD QS");
+SMLUnit.assertEqual Hand.deal (pairOfQueensHighCardNine, pairOfQueensHighCardSeven) First;
+
+val fullHouseWithThreeFours = valOf (Hand.fromString "2H 2D 4C 4D 4S");
+val fullHouseWithThreeThrees = valOf (Hand.fromString "3C 3D 3S 9S 9D");
+SMLUnit.assertEqual Hand.deal (fullHouseWithThreeFours, fullHouseWithThreeThrees) First;
 
 (*
 structure Main = struct
