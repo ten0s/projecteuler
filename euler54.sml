@@ -155,7 +155,7 @@ structure Hand = struct
          Card.rank c4 = r1 - 3 andalso
          Card.rank c5 = r1 - 4
       then
-          SOME (Card.rank c1)
+          SOME r1
       else
           NONE
   end
@@ -213,7 +213,7 @@ structure Hand = struct
          (r2 = r3 andalso
           r3 = r4) orelse
          (r3 = r4 andalso
-          r4 = r4)
+          r4 = r5)
       then
           SOME r3
       else
