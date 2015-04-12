@@ -326,9 +326,7 @@ structure Hand = struct
 end;
 
 (* TESTS BEGIN *)
-(*
 use "smlunit.sml";
-*)
 
 (* Card tests *)
 SMLUnit.assertThrow Card.mkCard (1,H) IllegalRank;
