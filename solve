@@ -45,6 +45,7 @@ Group is
       \$/basis.cm
       \$/smlnj-lib.cm
       list-utils.sml
+      number-utils.sml
       print-utils.sml
       smlunit.sml
       ${1}
