@@ -15,4 +15,6 @@ val it = [10,9,8,7,6,5,4,3,2,1] : int list
   end
   fun sum l = List.foldl op+ 0 l
   fun prod l = List.foldl op* 1 l
+
+  fun isPalindrom l = (List.rev l) = l
 end

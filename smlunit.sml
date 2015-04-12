@@ -4,6 +4,12 @@ structure SMLUnit = struct
   fun ok () = print ("OK\n");
   fun fail () = raise TestFailed;
 
+  fun assert func args =
+    if (func args) then ok () else fail ()
+
+  fun assertNot func args =
+    if not (func args) then ok () else fail ()
+
   fun assertThrow func args expectedException =
     (func args; fail ()) handle expectedException => ok ()
 
