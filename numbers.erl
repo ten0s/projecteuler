@@ -6,15 +6,16 @@
 is_pandigital(X, From, To) ->
     lists:sort(numbers:decimal_coefficients(X)) =:= lists:seq(From, To).
 
-decimal_coefficients(0) ->
-    [];
-decimal_coefficients(N) when is_integer(N) ->
-    [N rem 10|decimal_coefficients(N div 10)].
+decimal_coefficients(N) ->
+    base_coefficients(10, N).
 
-binary_coefficients(0) ->
+binary_coefficients(N) ->
+    base_coefficients(2, N).
+
+base_coefficients(_B, 0) ->
     [];
-binary_coefficients(N) when is_integer(N) ->
-    [N rem 2|binary_coefficients(N div 2)].
+base_coefficients(B, N) when is_integer(N) ->
+    [N rem B | base_coefficients(B, N div B)].
 
 -spec factorial(integer()) -> integer().
 factorial(N) when N >= 0 ->
