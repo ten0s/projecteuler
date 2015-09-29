@@ -67,8 +67,28 @@ EOF
     fi
 }
 
+run_ml() {
+    if [ `which corebuild` ]; then
+        out=`corebuild $2.byte`
+        res=$?
+        if [ "$res" -eq 0 ]; then
+            ./$2.byte
+            rm -rf $2.byte
+            rm -rf _build/
+        else
+            echo $out
+            exit $res
+        fi
+    else
+        echo "OCaml is NOT installed"
+        echo
+        echo "https://github.com/realworldocaml/book/wiki/Installation-Instructions"
+        exit 1
+    fi
+}
+
 number=$1
-filename=`ls euler$number.{hs,erl,sml} 2> /dev/null | head -n 1`
+filename=`ls euler$number.{hs,erl,sml,ml} 2> /dev/null | head -n 1`
 
 if [ ! -z $filename ] && [ -f $filename ]; then
     ext="${filename##*.}"
