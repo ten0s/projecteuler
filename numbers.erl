@@ -26,20 +26,28 @@ factorial(0, Acc) ->
 factorial(N, Acc) ->
 	factorial(N-1, N*Acc).
 
--spec gcd(integer(), integer()) -> integer().
+-spec gcd(pos_integer(), pos_integer()) -> pos_integer().
 gcd(M, 0) ->
 	abs(M);
 gcd(M, N) ->
 	gcd(N, M rem N).
 
--spec lcm(integer(), integer()) -> integer().
-lcm(M, N) ->
-	trunc(abs(M * N) / gcd(M, N)).
+-spec gcd([pos_integer()]) -> pos_integer().
+gcd([X]) ->
+    X;
+gcd([X | Xs]) ->
+    gcd(X, gcd(Xs)).
 
--spec lcm([integer()]) -> integer().
+%% https://en.wikipedia.org/wiki/Least_common_multiple
+-spec lcm(pos_integer(), pos_integer()) -> pos_integer().
+lcm(M, N) ->
+	%abs(M * N) div gcd(M, N).
+    (abs(M) div gcd(M, N)) * abs(N).
+
+-spec lcm([pos_integer()]) -> pos_integer().
 lcm([X]) ->
 	X;
-lcm([X|XS]) ->
+lcm([X | XS]) ->
 	lcm(X, lcm(XS)).
 
 -spec integer_length(integer()) -> integer().
