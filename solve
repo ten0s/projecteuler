@@ -87,8 +87,12 @@ run_ml() {
     fi
 }
 
+run_js() {
+    npm start $1
+}
+
 number=$1
-filename=`ls euler$number.{hs,erl,sml,ml} 2> /dev/null | head -n 1`
+filename=`ls euler$number.{hs,erl,sml,ml,js} 2> /dev/null | head -n 1`
 
 if [ ! -z $filename ] && [ -f $filename ]; then
     ext="${filename##*.}"
