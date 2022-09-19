@@ -1,8 +1,17 @@
 ![](https://projecteuler.net/profile/ten0s.png)
 
-Solve
-=====
+## Bootstrap
 
+### Node.js
+
+
+```
+$ npm install
+```
+
+## Solve
+
+```
 $ ./solve 1
-
 233168
+```
