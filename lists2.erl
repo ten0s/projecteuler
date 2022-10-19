@@ -1,5 +1,5 @@
 -module(lists2).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 is_palindrome(L) ->
     L =:= lists:reverse(L).

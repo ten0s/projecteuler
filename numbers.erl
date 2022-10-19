@@ -1,5 +1,5 @@
 -module(numbers).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 % haskell Numeric, Numbers.Primes
 

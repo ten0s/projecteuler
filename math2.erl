@@ -1,5 +1,5 @@
 -module(math2).
--compile(export_all).
+-compile([export_all, nowarn_export_all]).
 
 floor(X) when X < 0 ->
     T = trunc(X),
