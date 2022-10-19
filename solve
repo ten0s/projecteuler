@@ -91,13 +91,25 @@ run_js() {
     npm start $1
 }
 
+run_cpp() {
+    if [[ `which clang++` ]]; then
+        cxx=clang++
+    elif [[ `which g++` ]]; then
+        cxx=g++
+    else
+        echo "C++ compiler is NOT installed"
+        exit 1
+    fi
+    $cxx -std=c++17 -Wall -Werror $1 && ./a.out
+}
+
 num=$1
 ext=$2
 
 if [[ ! -z $ext ]]; then
     files=`ls euler$num.$ext 2> /dev/null`
 else
-    files=`ls euler$num.{erl,js,hs,ml,sml} 2> /dev/null`
+    files=`ls euler$num.{cpp,erl,js,hs,ml,sml} 2> /dev/null`
 fi
 
 if [[ -z $files ]]; then
