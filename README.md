@@ -12,6 +12,12 @@ $ npm install
 ## Solve
 
 ```
-$ ./solve 1
-233168
+$ ./solve
+usage: solve <problem #> [ext]
+```
+
+```
+$ ./solve 67
+Problem 67 using erl
+7273
 ```

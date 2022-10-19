@@ -1,15 +1,15 @@
 #!/bin/bash
 
-if [ $# -ne 1 ]; then
-    echo "usage: solve <problem #>"
+if [[ $# -ne 1 ]] && [[ $# -ne 2 ]]; then
+    echo "usage: solve <problem #> [ext]"
     exit 1
 fi
 
 run_hs() {
-    if [ `which ghc` ]; then
+    if [[ `which ghc` ]]; then
         out=`ghc $1`
         res=$?
-        if [ "$res" -eq "0" ]; then
+        if [[ "$res" -eq "0" ]]; then
             ./$2
             rm -f *.o *.hi $2
         else
@@ -28,7 +28,7 @@ run_hs() {
 }
 
 run_erl() {
-    if [ `which erlc` ]; then
+    if [[ `which erlc` ]]; then
         erlc lists2.erl math2.erl numbers.erl primes.erl
         erlc $1 && erl -noshell -s $2 main -s init stop
         rm -f *.beam
@@ -39,7 +39,7 @@ run_erl() {
 }
 
 run_sml() {
-    if [ `which sml` ]; then
+    if [[ `which sml` ]]; then
         cat > euler.cm <<EOF
 Group is
       \$/basis.cm
@@ -52,7 +52,7 @@ Group is
 EOF
         out=`ml-build euler.cm Main.main`
         res=$?
-        if [ "$res" -eq 0 ]; then
+        if [[ "$res" -eq 0 ]]; then
             sml @SMLload euler.x86-linux
             rm -rf euler.cm .cm/ *.x86-linux
         else
@@ -68,7 +68,7 @@ EOF
 }
 
 run_ml() {
-    if [ `which corebuild` ]; then
+    if [[ `which corebuild` ]]; then
         out=`corebuild $2.byte`
         res=$?
         if [ "$res" -eq 0 ]; then
@@ -91,14 +91,25 @@ run_js() {
     npm start $1
 }
 
-number=$1
-filename=`ls euler$number.{hs,erl,sml,ml,js} 2> /dev/null | head -n 1`
+num=$1
+ext=$2
 
-if [ ! -z $filename ] && [ -f $filename ]; then
-    ext="${filename##*.}"
-    name="${filename%.*}"
-    run_$ext $filename $name
+if [[ ! -z $ext ]]; then
+    files=`ls euler$num.$ext 2> /dev/null`
 else
-    echo "Problem $number isn't solved yet"
+    files=`ls euler$num.{erl,js,hs,ml,sml} 2> /dev/null`
+fi
+
+if [[ -z $files ]]; then
+    echo -n "Problem $num isn't solved yet"
+    [[ ! -z $ext ]] && echo -n " using $ext"
+    echo
     exit 1
 fi
+
+for file in $files; do
+    ext="${file##*.}"
+    name="${file%.*}"
+    echo "Problem $num using $ext"
+    run_$ext $file $name
+done
